@@ -74,7 +74,7 @@ app.get("/urls/:id", (req, res) => {
 */
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
+  //console.log(req.body); // Log the POST request body to the console
   let randomString = generateRandomString();
   //let long = req.body.longURL;
   //console.log(id);
@@ -93,10 +93,19 @@ app.post("/urls/:id/delete", (req, res) => {
   // :id is a param - dynamic / changing depending on what's passed;
   //delete req.body.id;
   // console.log(urlDatabase);
-  console.log(req.params); //object of keys where each key is the name of the param;
-  delete urlDatabase[req.params.id];
+  //console.log(req.params); //object of keys where each key is the name of the param;
+  delete urlDatabase[req.params.id]; // I need to reference the database I'm trying to delete, then the requested parameters (displayed through :id) and then .id to get the key for the delete method
   //delete urlDatabase[req.body];
   // delete urlDatabase;
+
+  res.redirect("/urls");
+});
+
+app.post("/urls/:id", (req, res) => {
+  // :id is a param - dynamic / changing depending on what's passed;
+
+  urlDatabase[req.params.id] = req.body.longURL;
+
   res.redirect("/urls");
 });
 
