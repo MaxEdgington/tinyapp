@@ -51,14 +51,18 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   res.render("urls_index", templateVars); // passing url data to our template
 });
 
 // adding a second route and template
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  console.log("+++ ", req.cookies["username"]);
+  const templateVars = {
+    username: req.cookies["username"],
+  };
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -66,6 +70,7 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: shortURL,
     longURL: urlDatabase[shortURL],
+    username: req.cookies["username"],
   };
   res.render("urls_show", templateVars);
 });
@@ -116,19 +121,10 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log(req.body);
-  res.cookie("username", req.body);
+  //console.log(req.body);
+  res.cookie("username", req.body.username);
+  console.log(req.cookies.username);
   res.redirect("/urls");
-});
-
-app.get("/urls", (req, res) => {
-  const templateVars = {
-    username: req.cookies["username"],
-    // ... any other vars
-  };
-  res.render("urls_index", templateVars);
-  res.render("urls_new", templateVars);
-  res.render("urls_show", templateVars);
 });
 
 //Not getting the meat of it - reminder
