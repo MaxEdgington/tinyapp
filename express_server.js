@@ -56,9 +56,22 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: req.params.longURL };
+  const shortURL = req.params.id;
+  const templateVars = {
+    id: shortURL,
+    longURL: urlDatabase[shortURL],
+  };
   res.render("urls_show", templateVars);
 });
+
+/*
+app.get("/urls/:id", (req, res) => {
+  const id = req.params.id;
+  const longURL = urlDatabase[id];
+  const templateVars = { id: id, longURL: longURL };
+  res.render("urls_show", templateVars);
+});
+*/
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
@@ -67,10 +80,7 @@ app.post("/urls", (req, res) => {
   //console.log(id);
   //urlDatabase.longURL = randomString;
   let longString = req.body.longURL;
-  console.log(longString);
-  console.log(longString);
   urlDatabase[randomString] = longString;
-  console.log(urlDatabase);
   res.redirect(`/urls/${randomString}`);
 });
 
@@ -78,3 +88,16 @@ app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
 });
+
+app.post("/urls/:id/delete", (req, res) => {
+  // :id is a param - dynamic / changing depending on what's passed;
+  //delete req.body.id;
+  // console.log(urlDatabase);
+  console.log(req.params); //object of keys where each key is the name of the param;
+  delete urlDatabase[req.params.id];
+  //delete urlDatabase[req.body];
+  // delete urlDatabase;
+  res.redirect("/urls");
+});
+
+//Not getting the meat of it - reminder
