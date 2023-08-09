@@ -1,5 +1,11 @@
 const express = require("express");
+const { cookie } = require("request");
+const cookieParser = require("cookie-parser");
+
 const app = express();
+
+app.use(cookieParser());
+
 const PORT = 8080; // default port 8080
 
 // installed ejs with npm install ejs
@@ -107,6 +113,22 @@ app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL;
 
   res.redirect("/urls");
+});
+
+app.post("/login", (req, res) => {
+  console.log(req.body);
+  res.cookie("username", req.body);
+  res.redirect("/urls");
+});
+
+app.get("/urls", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+    // ... any other vars
+  };
+  res.render("urls_index", templateVars);
+  res.render("urls_new", templateVars);
+  res.render("urls_show", templateVars);
 });
 
 //Not getting the meat of it - reminder
