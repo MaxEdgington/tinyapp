@@ -1,7 +1,5 @@
 const express = require("express");
-const { cookie } = require("request");
 const cookieSession = require("cookie-session");
-const { restart } = require("nodemon");
 const bcrypt = require("bcryptjs");
 const { getUserByEmail } = require("./helpers.js");
 
