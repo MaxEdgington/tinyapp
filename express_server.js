@@ -1,33 +1,23 @@
 const express = require("express");
 const { cookie } = require("request");
-const cookieSession = require('cookie-session');
+const cookieSession = require("cookie-session");
 const { restart } = require("nodemon");
 const bcrypt = require("bcryptjs");
+const { getUserByEmail } = require("./helpers.js");
 
 const app = express();
 
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 
-/*
-
-const toggleError = function () {
-  setTimeout(() => {
-    userError = false;
-  }, 3000);
-};
-*/
-
-app.use(cookieSession({
-  name: "session",
-  keys: ["key1", "key2"]
-}));
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ["key1", "key2"],
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 
-
 app.set("view engine", "ejs");
-
-// installed ejs with npm install ejs
-// set ejs as view engine
 
 // URLS
 
@@ -47,14 +37,12 @@ const urlsForUser = (userId) => {
   let urlKeys = Object.keys(urlDatabase);
 
   for (let key of urlKeys) {
-    //console.log(key);
     if (urlDatabase[key].userID === userId) {
       urls[key] = urlDatabase[key];
     }
   }
   return urls;
 };
-
 
 // USERS
 
@@ -89,33 +77,16 @@ const generateRandomString = () => {
   return result;
 };
 
-//LOOKUP HELPER FUNCTION
-
-const getUserByEmail = (email) => {    // goes through users and returns the user 
-  for (let user in users) {
-    // use in for objects
-    if (users[user].email === email) {
-      return users[user];
-    }
-  }
-  return null;
-};
-
-
 //TEST ROUTE
-
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
-
-
 
 // TEST ROUTE
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-// adding route -> not completely sure what this is for
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -123,7 +94,8 @@ app.get("/urls.json", (req, res) => {
 // GET U/:ID - Shareable
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id.longURL];
+  const shortURL = req.params.id;
+  const longURL = urlDatabase[shortURL].longURL;
 
   if (!longURL) {
     res.status(404).send("Link not found");
@@ -142,14 +114,10 @@ app.get("/urls", (req, res) => {
   if (!user) {
     return res.status(400).send("Must be logged in");
   }
-  //Now we have user!
-
-  //console.log("Req Cookies", req.cookies);
-  //DO MORE STUFF HERE!!
 
   const urls = urlsForUser(userId);
   const templateVars = { urls, user };
-  res.render("urls_index", templateVars); // passing url data to our template
+  res.render("urls_index", templateVars);
 });
 
 // GET URLS/NEW
@@ -157,8 +125,6 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
-  //Now we have user!
-  //console.log("+++ ", req.cookies["user_id"]);
 
   if (!req.session.user_id) {
     res.redirect("/login");
@@ -173,7 +139,6 @@ app.get("/urls/new", (req, res) => {
 app.get("/register", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
-  //Now we have user!
 
   if (!req.session.user_id) {
     res.render("urls_register", { user });
@@ -188,33 +153,14 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
-  //Now we have user!
 
   if (req.session.user_id) {
     res.redirect("/urls");
     return;
   }
 
-
   res.render("urls_login", { user });
-  /*
-  if (req.cookies.user_id !== undefined) {
-    
-  } else {
-    
-  }
-
-  */
 });
-
-/*
-app.get("/urls/:id", (req, res) => {
-  const id = req.params.id;
-  const longURL = urlDatabase[id];
-  const templateVars = { id: id, longURL: longURL };
-  res.render("urls_show", templateVars);
-});
-*/
 
 // GET URLS/:ID (SHOW)
 
@@ -225,8 +171,8 @@ app.get("/urls/:id", (req, res) => {
     return;
   }
 
-  const user = users[userId];   // declare validate logic    <--- declare
-  if (!user) {      // <--- validate
+  const user = users[userId];
+  if (!user) {
     res.status(401).send("ID does not exist");
     return;
   }
@@ -253,12 +199,6 @@ app.get("/urls/:id", (req, res) => {
 // POST URLS
 
 app.post("/urls", (req, res) => {
-  //console.log(req.body); // Log the POST request body to the console
-
-  //let long = req.body.longURL;
-  //console.log(id);
-  //urlDatabase.longURL = randomString;
-
   const userId = req.session.user_id;
 
   if (!userId) {
@@ -268,7 +208,7 @@ app.post("/urls", (req, res) => {
   }
 
   const shortId = generateRandomString();
-  // req.body is the payload of the form;
+
   const longString = req.body.longURL;
   urlDatabase[shortId] = {
     longURL: longString,
@@ -287,7 +227,7 @@ app.post("/register", (req, res) => {
     return res.status(400).send("Error 400: Empty email or password");
   }
 
-  if (getUserByEmail(email)) {
+  if (getUserByEmail(email, users)) {
     return res.status(400).send("Error 400: Email Already Exists");
   }
 
@@ -295,14 +235,9 @@ app.post("/register", (req, res) => {
   const password = bcrypt.hashSync(passwordText, 10);
   users[id] = { id, email, password };
 
-  // eslint-disable-next-line camelcase
   req.session.user_id = id;
-  //console.log(users);
+
   res.redirect("/urls");
-  //res.redirect("/register");
-
-
-  //users[userId] = id;
 });
 
 // POST DELETE
@@ -317,25 +252,17 @@ app.post("/urls/:id/delete", (req, res) => {
 
   const url = urlDatabase[req.params.id];
   if (url.userID !== userId) {
-    res.status(403).send("User does not own URL"); // 403 we are logged in but not owner 
+    res.status(403).send("User does not own URL");
     return;
   }
 
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
-
-  // :id is a param - dynamic / changing depending on what's passed;
-  //delete req.body.id;
-  // console.log(urlDatabase);
-  //console.log(req.params); //object of keys where each key is the name of the param;
-  // I need to reference the database I'm trying to delete, then the requested parameters (displayed through :id) and then .id to get the key for the delete method
-  //delete urlDatabase[req.body];
-  // delete urlDatabase;
 });
 
 // POST EDIT
 
-app.post("/urls/:id", (req, res) => {    // : <- indicates that it's a param
+app.post("/urls/:id", (req, res) => {
   const userID = req.session.user_id;
   const user = users[userID];
   if (!user) {
@@ -345,7 +272,7 @@ app.post("/urls/:id", (req, res) => {    // : <- indicates that it's a param
 
   const url = urlDatabase[req.params.id];
   if (url.userID !== userID) {
-    res.status(403).send("User does not own URL"); // 403 we are logged in but not owner 
+    res.status(403).send("User does not own URL");
     return;
   }
 
@@ -357,29 +284,25 @@ app.post("/urls/:id", (req, res) => {    // : <- indicates that it's a param
 // POST LOGIN
 
 app.post("/login", (req, res) => {
-  //console.log(req.body);
   const email = req.body.email;
   const password = req.body.password;
 
-  const user = getUserByEmail(email);
+  const user = getUserByEmail(email, users);
   if (!user || !bcrypt.compareSync(password, user.password)) {
     return res.status(403).send("Invalid Login");
   }
 
-  res.cookie("user_id", user.id);
+  req.session.user_id = user.id;
   res.redirect("/urls");
 });
-
-//users[userId] = id;
 
 // POST LOGOUT
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  res.clearCookie("session.sig");
+  res.clearCookie("session");
   res.redirect("/login");
 });
 
-// Listener - accepting incomming requests (there's technically no outgoing if there's no incomming)
-app.listen(PORT, () => {
-  //console.log(`Example app listening on port ${PORT}!`);
-});
+// Listener
+app.listen(PORT, () => {});
