@@ -20,11 +20,11 @@ This is an early project so the security isn't currently up to industry standard
 
 ## Final Product
 
-!["Short URL Conversion!"](https://github.com/MaxEdgington/tinyapp/blob/ea708bd8183bdc4ff91b52138a81e817b567eb71/docs/Tiny%20App%20Screenshots/new.png)
-!["Links saved to user profiles!"](https://github.com/MaxEdgington/tinyapp/blob/ea708bd8183bdc4ff91b52138a81e817b567eb71/docs/Tiny%20App%20Screenshots/urls.png)
-!["Login and logout functionality!"](https://github.com/MaxEdgington/tinyapp/blob/ea708bd8183bdc4ff91b52138a81e817b567eb71/docs/Tiny%20App%20Screenshots/login.png)
+!["Short URL Conversion!"](https://github.com/MaxEdgington/tinyapp/blob/master/docs/Tiny%20App%20Screenshots/new.png?raw=true)
+!["Links saved to user profiles!"](https://github.com/MaxEdgington/tinyapp/blob/master/docs/Tiny%20App%20Screenshots/urls.png?raw=true)
+!["Login and logout functionality!"](https://github.com/MaxEdgington/tinyapp/blob/master/docs/Tiny%20App%20Screenshots/login.png?raw=true)
 
-!["Login and logout functionality!"](https://github.com/MaxEdgington/tinyapp/blob/ea708bd8183bdc4ff91b52138a81e817b567eb71/docs/Tiny%20App%20Screenshots/Error%20Messages.png)
+!["Error Messages!"](https://github.com/MaxEdgington/tinyapp/blob/master/docs/Tiny%20App%20Screenshots/Error%20Messages.png?raw=true)
 
 ## Dependencies
 
