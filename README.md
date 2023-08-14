@@ -37,3 +37,4 @@ This is an early project so the security isn't currently up to industry standard
 
 - Install all dependencies (using the `npm install` command).
 - Run the development web server using the `npm start` command.
+- Visit the site through http://localhost:8080/login
